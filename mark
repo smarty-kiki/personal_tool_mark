@@ -1,0 +1,36 @@
+#mark
+
+export MARKPATH=$HOME/.mark.d
+export MARKDEFAULT=kiki
+
+mkdir -p "$MARKPATH"
+
+function jump {
+    local m=$1
+    if [ "$m" = "" ]; then m=$MARKDEFAULT; fi
+    cd -P "$MARKPATH/$m" 2>/dev/null || echo "No such mark: $m"
+}
+function mark {
+    local m=$1
+    if [ "$m" = "" ]; then m=$MARKDEFAULT; fi
+    rm -f "$MARKPATH/$m"
+    ln -s "$(pwd)" "$MARKPATH/$m"
+}
+function unmark {
+    local m=$1
+    if [ "$m" = "" ]; then m=$MARKDEFAULT; fi
+    rm -i "$MARKPATH/$m"
+}
+function marks {
+    ls -l "$MARKPATH" | grep ^l | sed -E 's/ +/ /g' | cut -d ' ' -f 9-
+}
+
+_completemarks() {
+    local curw=${COMP_WORDS[COMP_CWORD]}
+    local wordlist=$(ls -l "$MARKPATH" | grep ^l | sed -E 's/ +/ /g' | cut -d ' ' -f 9)
+    COMPREPLY=($(compgen -W '${wordlist[@]}' -- "$curw"))
+    return 0
+}
+
+alias j='jump'
+complete -F _completemarks jump unmark j
