@@ -22,12 +22,12 @@ function unmark {
     rm -i "$MARKPATH/$m"
 }
 function marks {
-    ls -l "$MARKPATH" | grep ^l | sed -E 's/ +/ /g' | cut -d ' ' -f 9-
+    ls -l "$MARKPATH/" | grep ^l | sed -E 's/ +/ /g' | cut -d ' ' -f 9-
 }
 
 _completemarks() {
     local curw=${COMP_WORDS[COMP_CWORD]}
-    local wordlist=$(ls -l "$MARKPATH" | grep ^l | sed -E 's/ +/ /g' | cut -d ' ' -f 9)
+    local wordlist=$(ls -l "$MARKPATH/" | grep ^l | sed -E 's/ +/ /g' | cut -d ' ' -f 9)
     COMPREPLY=($(compgen -W '${wordlist[@]}' -- "$curw"))
     return 0
 }
