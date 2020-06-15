@@ -9,6 +9,11 @@ function jump {
     local m=$1
     if [ "$m" = "" ]; then m=$MARKDEFAULT; fi
     cd -P "$MARKPATH/$m" 2>/dev/null || echo "No such mark: $m"
+
+    local d=$2
+    if [ "$d" != "" ]; then
+        cd -P "$d"
+    fi
 }
 function mark {
     local m=$1
@@ -26,10 +31,21 @@ function marks {
 }
 
 _completemarks() {
-    local curw=${COMP_WORDS[COMP_CWORD]}
-    local wordlist=$(ls -l "$MARKPATH/" | grep ^l | sed -E 's/ +/ /g' | cut -d ' ' -f 9)
-    COMPREPLY=($(compgen -W '${wordlist[@]}' -- "$curw"))
-    return 0
+    case $COMP_CWORD in
+    0)
+       ;;
+    1) local curw=${COMP_WORDS[COMP_CWORD]}
+       local wordlist=$(ls -l "$MARKPATH/" | grep ^l | sed -E 's/ +/ /g' | cut -d ' ' -f 9)
+       COMPREPLY=($(compgen -W '${wordlist[@]}' -- "$curw"))
+       return 0
+       ;;
+    2) local curw=${COMP_WORDS[COMP_CWORD]}
+       local first=${COMP_WORDS[1]}
+       local wordlist=$(ls -l "$MARKPATH/$first/" | grep ^d | sed -E 's/ +/ /g' | cut -d ' ' -f 9)
+       COMPREPLY=($(compgen -W '${wordlist[@]}' -- "$curw"))
+       return 0
+       ;;
+    esac
 }
 
 alias j='jump'
